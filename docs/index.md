@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Summoning Rituals"
-  text: "KubeJS Wiki"
-  tagline: Create custom summoning rituals for items, mobs, and commands.
+  text: "KubeJS Documentation"
+  tagline: Create custom summoning rituals for items, mobs, and commands — Minecraft 1.21.1 / NeoForge
   actions:
     - theme: brand
       text: Get Started
@@ -18,11 +18,11 @@ hero:
 
 features:
   - title: 🛠️ Recipe Builder
-    details: Fluent API for creating altar recipes with item/entity inputs, outputs, commands, and conditions.
+    details: Fluent builder API for creating altar recipes with item/entity inputs, outputs, commands, and conditions — all from a single KubeJS script.
   - title: 🐾 Entity Support
-    details: Summon and sacrifice entities with custom NBT data, tooltips, spawn offsets, and spread control.
+    details: Summon and sacrifice entities with custom NBT data, tooltips, spawn offsets, and spread control using SummoningEntity helpers.
   - title: ⚡ Events
-    details: Hook into ritual start and completion events to add custom logic, effects, and player interactions.
+    details: Hook into ritual start and completion events to add custom logic like XP costs, lightning effects, or achievement triggers.
   - title: 🌦️ Conditions
-    details: Restrict rituals by biome, dimension, time, weather, height, structures, and open sky.
+    details: Restrict rituals by biome, dimension, time of day, weather, height, structures, and open sky using the conditions builder.
 ---

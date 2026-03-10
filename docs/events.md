@@ -1,82 +1,116 @@
 # Ritual Events
 
-If recipes are set up properly, you can use two events to alter the functionality of summoning rituals. These events require **KubeJS**.
+Summoning Rituals fires two events that let you hook in custom logic with KubeJS. Use these to add costs, effects, rewards, or cancel rituals based on custom conditions.
 
 ## Event Properties
 
-Both events share the same event object with the following properties:
+Both events share the same event object:
 
 | Property | Type | Description |
 |---|---|---|
-| `event.level` | `ServerLevel` | The world/level the ritual was started in |
-| `event.pos` | `BlockPos` | The block position of the altar |
-| `event.recipe` | `AltarRecipe` | The altar recipe being crafted |
+| `event.level` | `ServerLevel` | The world/level the ritual is in |
+| `event.pos` | `BlockPos` | Block position of the altar |
+| `event.recipe` | `AltarRecipe` | The recipe being crafted |
 | `event.player` | `ServerPlayer?` | The player who invoked the ritual |
 
-::: warning
-The `event.player` can be `null` if the ritual was started through automation (e.g. by a mod or redstone). Always check for `null` before accessing player properties.
+::: warning NULL PLAYER
+`event.player` is **null** if the ritual was started through automation (redstone, mods, etc.). Always check before accessing player properties:
+```js
+if (!event.player) return;
+```
 :::
 
 ## `summoningrituals.start`
 
-Fired **right after** the catalyst is inserted and **before** the ritual actually starts. You can cancel this event to prevent the ritual from beginning.
+Fired **after** the catalyst is inserted but **before** the ritual begins. This event **can be cancelled**.
 
 ```js
 ServerEvents.generic("summoningrituals.start", event => {
-    // Lightning strike when starting the ritual
+    // Lightning strike visual effect
     event.level.spawnLightning(event.pos.x, event.pos.y, event.pos.z, true);
 
-    // Player can be null if started by automation
     if (!event.player) return;
 
-    // Require at least 3 XP levels to start
+    // Require 3 XP levels to start
     if (event.player.getXpLevel() < 3) {
-        event.cancel();
+        event.cancel();  // prevents the ritual from starting
     }
 })
 ```
 
 ### Use Cases
 
-- Add visual/sound effects when a ritual starts
-- Check for additional conditions (XP levels, inventory items, etc.)
-- Cancel the ritual based on custom logic
-- Deduct XP or items from the player
+- **Visual effects** — lightning, particles, sounds when a ritual starts
+- **XP cost** — require and deduct experience levels
+- **Item checks** — require the player to hold or carry specific items
+- **Custom conditions** — cancel based on any logic you want
+- **Cooldowns** — prevent spamming rituals
+
+### XP Cost Example
+
+```js
+ServerEvents.generic("summoningrituals.start", event => {
+    if (!event.player) return;
+
+    // Cost: 5 levels
+    if (event.player.getXpLevel() < 5) {
+        event.cancel();
+        return;
+    }
+    event.player.addXPLevels(-5);
+})
+```
 
 ## `summoningrituals.complete`
 
-Fired **when the ritual is complete** and the outputs have already been spawned. This event cannot be cancelled.
+Fired **after** the ritual completes and outputs have already been spawned. This event **cannot** be cancelled.
 
 ```js
 ServerEvents.generic("summoningrituals.complete", event => {
-    // Player can be null if started by automation
     if (!event.player) return;
 
-    // Reward the player with 10 XP levels
+    // Reward: 10 XP levels
     event.player.addXPLevels(10);
 })
 ```
 
 ### Use Cases
 
-- Reward the player with XP, items, or effects
-- Trigger advancements or custom progression
-- Spawn additional particles or effects
-- Log ritual completions
+- **XP rewards** — give experience on completion
+- **Potion effects** — buff or debuff the player
+- **Advancements** — grant custom advancements
+- **Additional spawns** — spawn particles, lightning, entities
+- **Progression** — trigger gamestage or quest completion
 
-## Full Events Example
+### Full Reward Example
 
 ```js
-// Ritual start event
+ServerEvents.generic("summoningrituals.complete", event => {
+    if (!event.player) return;
+
+    // XP reward
+    event.player.addXPLevels(10);
+
+    // Potion effects
+    event.player.potionEffects.add("minecraft:regeneration", 200, 1);
+    event.player.potionEffects.add("minecraft:glowing", 100, 0);
+
+    // Lightning at the altar
+    event.level.spawnLightning(event.pos.x, event.pos.y, event.pos.z, true);
+})
+```
+
+## Both Events Together
+
+```js
+// === Ritual Start ===
 ServerEvents.generic("summoningrituals.start", event => {
-    // Visual effect: lightning strike
-    event.level.spawnLightning(
-        event.pos.x, event.pos.y, event.pos.z, true
-    );
+    // Visual: lightning strike
+    event.level.spawnLightning(event.pos.x, event.pos.y, event.pos.z, true);
 
     if (!event.player) return;
 
-    // Cost: 5 XP levels to perform any ritual
+    // Cost: 5 XP levels
     if (event.player.getXpLevel() < 5) {
         event.cancel();
         return;
@@ -84,18 +118,16 @@ ServerEvents.generic("summoningrituals.start", event => {
     event.player.addXPLevels(-5);
 })
 
-// Ritual complete event
+// === Ritual Complete ===
 ServerEvents.generic("summoningrituals.complete", event => {
     if (!event.player) return;
 
-    // Reward: 10 XP levels
+    // Reward: 10 XP levels + regeneration
     event.player.addXPLevels(10);
-
-    // Give a potion effect
-    event.player.potionEffects.add("minecraft:regeneration", 200, 1);
+    event.player.potionEffects.add("minecraft:regeneration", 200, 2);
 })
 ```
 
-::: info
-Events apply to **all** summoning rituals. If you want different behavior for different recipes, check `event.recipe` to identify which ritual is being performed.
+::: info GLOBAL EVENTS
+Events apply to **all** summoning rituals, not individual ones. If you want different behavior per recipe, inspect `event.recipe` to identify which ritual is being performed and branch accordingly.
 :::

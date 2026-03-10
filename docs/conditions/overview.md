@@ -1,6 +1,6 @@
 # Conditions Overview
 
-Conditions let you restrict when a ritual can be performed. They are added to a recipe using the `.conditions()` method, which takes a callback with a conditions builder.
+Conditions restrict **when** and **where** a ritual can be performed. They're added to a recipe using the `.conditions()` method with a builder callback.
 
 ## Basic Usage
 
@@ -18,19 +18,28 @@ event.recipes.summoningrituals
 
 ## Available Conditions
 
-| Method | Description | Details |
+| Method | Description | Page |
 |---|---|---|
 | `.biomes([...])` | Require specific biomes | [Biome & Dimension](/conditions/biome-dimension) |
-| `.dimension(dim)` | Require a specific dimension | [Biome & Dimension](/conditions/biome-dimension) |
+| `.dimension(id)` | Require a specific dimension | [Biome & Dimension](/conditions/biome-dimension) |
 | `.time(time)` | Require day or night | [Time & Weather](/conditions/time-weather) |
-| `.weather(cb)` | Require weather conditions | [Time & Weather](/conditions/time-weather) |
-| `.maxHeight(y)` | Require altar below a Y level | [Environment](/conditions/environment) |
-| `.setOpenSky(bool)` | Require open sky above altar | [Environment](/conditions/environment) |
-| `.structures(structure)` | Require a structure nearby | [Environment](/conditions/environment) |
+| `.weather(callback)` | Require weather state | [Time & Weather](/conditions/time-weather) |
+| `.maxHeight(y)` | Require altar below a Y level | [Height, Sky & Structures](/conditions/environment) |
+| `.setOpenSky(bool)` | Require open/covered sky | [Height, Sky & Structures](/conditions/environment) |
+| `.structures(id)` | Require a structure nearby | [Height, Sky & Structures](/conditions/environment) |
 
-## Combining Conditions
+## How Conditions Work
 
-All conditions are **AND**-combined — every condition must be satisfied for the ritual to start. You can chain as many as you need:
+All conditions are **AND**-combined. Every condition must be satisfied simultaneously for the ritual to start.
+
+If any condition fails when the player inserts the catalyst:
+- The ritual does **not** start
+- The catalyst is **returned** to the player
+- There is **no** error message by default
+
+## Full Conditions Example
+
+This example uses every available condition:
 
 ```js
 .conditions(conditions =>
@@ -45,6 +54,15 @@ All conditions are **AND**-combined — every condition must be satisfied for th
 )
 ```
 
-::: warning
-If any condition is not met, the ritual will simply not start when the player inserts the catalyst. There is no error message by default — the catalyst is returned to the player.
+This ritual requires **all** of the following to be true:
+1. Altar is in a plains or desert biome
+2. Altar is in the overworld
+3. Altar is at Y=30 or below
+4. Altar has open sky above
+5. Altar is inside a mineshaft structure
+6. It is nighttime
+7. It is thundering
+
+::: tip DESIGN TIP
+You don't need to use every condition. Most rituals only need one or two. Use conditions to create themed rituals — a "dark ritual" might need nighttime, while an "ocean ritual" might need a specific biome.
 :::

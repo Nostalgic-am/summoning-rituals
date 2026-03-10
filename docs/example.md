@@ -1,8 +1,8 @@
 # Full Example
 
-A complete working example demonstrating every feature of the Summoning Rituals KubeJS API.
+A complete working example demonstrating every feature of the Summoning Rituals KubeJS API for **Minecraft 1.21.1**.
 
-## Recipe
+## Complete Recipe
 
 ```js
 ServerEvents.recipes(event => {
@@ -69,25 +69,91 @@ ServerEvents.recipes(event => {
 })
 ```
 
-## Breakdown
+## What This Does
 
-This example creates a ritual that:
+### Catalyst
+A **stick** placed on the altar starts this ritual.
 
-**Catalyst:** A stick placed on the altar.
+### Item Inputs (Pedestals)
+- 1 cobblestone
+- 1 item from the `#c:glass_blocks` tag
+- 3 items from the `#c:ingots` tag
 
-**Item Inputs:** Cobblestone, any glass block, and 3 of any ingot on the pedestals.
+### Entity Inputs (Sacrifice Zone)
+All of these entities must be present in the 6×6×6 sacrifice zone:
+- 3 elder guardians
+- 1 phantom
+- 1 silverfish
+- 3 cows
+- 1 wither
+- 1 cat (shown with "Meow" tooltip in JEI)
 
-**Entity Inputs:** 3 elder guardians, a phantom, a silverfish, 3 cows, a wither, and a cat (with a "Meow" tooltip in JEI) must all be in the sacrifice zone.
+### Item Outputs
+- 1 apple (at altar)
+- 1 carrot (at altar)
+- 3 diamonds (at altar)
+- Emeralds offset by (1, 2, 2) with random spread in a 4×2×4 area
 
-**Item Outputs:** An apple, a carrot, 3 diamonds, and emeralds that spawn offset from the altar with random spread.
+### Entity Outputs
+- 1 bat (at altar)
+- 1 ender dragon (at altar)
+- 4 creepers (at altar)
+- 2 foxes (at altar)
+- 2 blazes with 50 max health, offset by (1, 2, 2), aqua "50 health" tooltip
+- 3 zombies holding enchanted diamond swords (Sharpness I), "Has Sword lol" tooltip
+- 1 ghast with 50 max health, offset (1, 2, 2), spread (4, 2, 4)
 
-**Entity Outputs:**
-- A bat, an ender dragon, and 4 creepers (simple spawns)
-- 2 foxes
-- 2 blazes with 50 max health, offset spawn, and an aqua "50 health" tooltip
-- 3 zombies holding enchanted diamond swords
-- A ghast with 50 max health, offset, and spread
+### Commands
+Sends "Hi" and "Hello" in server chat.
 
-**Commands:** Sends "Hi" and "Hello" in chat.
+### Conditions
+**All** of the following must be true simultaneously:
+1. Altar is in a **plains** or **desert** biome
+2. Altar is in the **overworld**
+3. Altar is at **Y ≤ 30**
+4. Altar has **open sky** above
+5. Altar is inside a **mineshaft** structure
+6. It is **nighttime**
+7. There is a **thunderstorm**
 
-**Conditions:** Only works in plains or desert biomes, in the overworld, below Y=30, with open sky, inside a mineshaft structure, at night, during a thunderstorm.
+## Simpler Examples
+
+### Basic Item Transformation
+
+```js
+ServerEvents.recipes(event => {
+    event.recipes.summoningrituals
+        .altar("iron_ingot")
+        .itemInputs(["8x coal"])
+        .itemOutputs(["diamond"])
+})
+```
+
+### Mob Summoning
+
+```js
+ServerEvents.recipes(event => {
+    event.recipes.summoningrituals
+        .altar("bone")
+        .itemInputs(["rotten_flesh", "spider_eye", "gunpowder"])
+        .entityOutputs(["minecraft:skeleton", "minecraft:zombie", "minecraft:creeper"])
+})
+```
+
+### Conditional Ritual with Commands
+
+```js
+ServerEvents.recipes(event => {
+    event.recipes.summoningrituals
+        .altar("nether_star")
+        .itemInputs(["4x obsidian", "4x crying_obsidian"])
+        .entityInputs(["minecraft:wither"])
+        .commands(["advancement grant @p only my_pack:defeated_wither"])
+        .itemOutputs(["elytra"])
+        .sacrificeZone([5, 5, 5])
+        .conditions(c =>
+            c.dimension("minecraft:the_end")
+             .setOpenSky(true)
+        )
+})
+```

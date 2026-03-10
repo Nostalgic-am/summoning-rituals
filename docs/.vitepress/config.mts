@@ -4,7 +4,8 @@ const BASE = "/kubejs/";
 
 export default defineConfig({
   title: "Summoning Rituals",
-  description: "KubeJS Wiki for the Summoning Rituals Minecraft mod",
+  description:
+    "KubeJS documentation for Summoning Rituals (Minecraft 1.21.1 / NeoForge)",
   base: BASE,
 
   themeConfig: {
@@ -26,6 +27,10 @@ export default defineConfig({
             text: "Modrinth",
             link: "https://modrinth.com/mod/summoningrituals",
           },
+          {
+            text: "Discord",
+            link: "https://discord.com/invite/ThFnwZCyYY",
+          },
         ],
       },
     ],
@@ -36,6 +41,7 @@ export default defineConfig({
         items: [
           { text: "Home", link: "/" },
           { text: "Getting Started", link: "/getting-started" },
+          { text: "Migration from 1.19/1.20", link: "/migration" },
         ],
       },
       {
@@ -53,7 +59,10 @@ export default defineConfig({
           { text: "Overview", link: "/conditions/overview" },
           { text: "Biome & Dimension", link: "/conditions/biome-dimension" },
           { text: "Time & Weather", link: "/conditions/time-weather" },
-          { text: "Height, Sky & Structures", link: "/conditions/environment" },
+          {
+            text: "Height, Sky & Structures",
+            link: "/conditions/environment",
+          },
         ],
       },
       {
@@ -62,7 +71,10 @@ export default defineConfig({
       },
       {
         text: "Reference",
-        items: [{ text: "Full Example", link: "/example" }],
+        items: [
+          { text: "Full Example", link: "/example" },
+          { text: "Source Code", link: "/source" },
+        ],
       },
     ],
 
